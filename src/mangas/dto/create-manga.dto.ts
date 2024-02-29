@@ -1,3 +1,4 @@
 export class CreateMangaDto {
-  name: any;
+  name: string;
+  type: 'murim' | 'action';
 }
