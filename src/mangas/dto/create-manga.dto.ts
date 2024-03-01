@@ -1,3 +1,9 @@
+import { IsEnum, MinLength } from 'class-validator';
+
 export class CreateMangaDto {
-  name: any;
+  @MinLength(3) //https://github.com/typestack/class-validator
+  name: string;
+
+  @IsEnum(['murim', 'action'], { message: 'Use correct type' })
+  type: 'murim' | 'action';
 }
