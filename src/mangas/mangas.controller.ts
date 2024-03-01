@@ -9,11 +9,13 @@ import {
   Post,
   Put,
   Query,
+  UseGuards,
   ValidationPipe,
 } from '@nestjs/common';
 import { CreateMangaDto } from './dto/create-manga.dto';
 import { UpdateMangaDto } from './dto/update-manga.dto';
 import { MangasService } from './mangas.service';
+import { GalsenMangasGuard } from 'src/galsen-mangas/galsen-mangas.guard';
 
 @Controller('mangas')
 export class MangasController {
@@ -38,6 +40,7 @@ export class MangasController {
   }
 
   @Post()
+  @UseGuards(GalsenMangasGuard)
   createManga(@Body(new ValidationPipe()) createMangaDto: CreateMangaDto) {
     return this.mangasService.createManga(createMangaDto);
   }
