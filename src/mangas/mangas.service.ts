@@ -17,7 +17,7 @@ export class MangasService {
   }
 
   getManga(id: number) {
-    const manga = this.mangas.filter((manga) => manga.id === id);
+    const manga = this.mangas.find((manga) => manga.id === id);
     if (!manga) {
       throw new Error('Ninja bot found');
     }

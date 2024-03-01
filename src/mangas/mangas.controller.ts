@@ -3,10 +3,13 @@ import {
   Controller,
   Delete,
   Get,
+  NotFoundException,
   Param,
+  ParseIntPipe,
   Post,
   Put,
   Query,
+  ValidationPipe,
 } from '@nestjs/common';
 import { CreateMangaDto } from './dto/create-manga.dto';
 import { UpdateMangaDto } from './dto/update-manga.dto';
@@ -26,12 +29,16 @@ export class MangasController {
   }
 
   @Get(':id')
-  getManga(@Param('id') id: string) {
-    return this.mangasService.getManga(+id);
+  getManga(@Param('id', ParseIntPipe) id: number) {
+    try {
+      return this.mangasService.getManga(id);
+    } catch (error) {
+      throw new NotFoundException();
+    }
   }
 
   @Post()
-  createManga(@Body() createMangaDto: CreateMangaDto) {
+  createManga(@Body(new ValidationPipe()) createMangaDto: CreateMangaDto) {
     return this.mangasService.createManga(createMangaDto);
   }
 
