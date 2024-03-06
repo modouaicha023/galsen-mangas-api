@@ -1,9 +1,10 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateMangaDto } from './dto/create-manga.dto';
-import { UpdateMangaDto } from './dto/update-manga.dto';
+// import { UpdateMangaDto } from './dto/update-manga.dto';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { Manga } from './schemas/manga.schema';
+import { UpdateMangaDto } from './dto/update-manga.dto';
 
 @Injectable()
 export class MangaService {
@@ -18,37 +19,56 @@ export class MangaService {
   ];
 
   async getMangas(): Promise<Manga[]> {
-    const mangas = await this.mangaModel.find();
-    return mangas;
+    const allMangas = await this.mangaModel.find();
+    return allMangas;
   }
 
   async getManga(id: string): Promise<Manga> {
-    const manga = await this.mangaModel.findById(id);
-    if (!manga) {
+    try {
+      const manga = await this.mangaModel.findById(id);
+      if (!manga) {
+        throw new NotFoundException('Manga not found');
+      }
+      return manga;
+    } catch (error) {
       throw new NotFoundException('Manga not found');
     }
-    return manga;
   }
 
-  async createManga(createMangaDto: CreateMangaDto) {
+  async createManga(createMangaDto: CreateMangaDto): Promise<Manga> {
     const res = await this.mangaModel.create(createMangaDto);
     return res;
   }
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  updateManga(id: string, _updateMangaDto: UpdateMangaDto) {
-    this.mangas = this.mangas.map((manga) => {
-      // if (manga._id === id) {
-      //   return { ...manga, ...updateMangaDto };
-      // }
+  async updateManga(
+    id: string,
+    updateMangaDto: UpdateMangaDto,
+  ): Promise<Manga> {
+    try {
+      const manga = await this.mangaModel.findByIdAndUpdate(
+        id,
+        updateMangaDto,
+        { new: true, runValidators: true },
+      );
+      if (!manga) {
+        throw new NotFoundException('Manga not found');
+      }
       return manga;
-    });
-    return this.getManga(id);
+    } catch (error) {
+      throw new NotFoundException('Manga not found');
+    }
   }
 
-  deleteManga(id: string) {
-    const toBeDelete = this.getManga(id);
-    // this.mangas = this.mangas.filter((manga) => manga.id as string !== id);
-    return toBeDelete;
+  async deleteManga(id: string) {
+    try {
+      const manga = await this.mangaModel.findByIdAndDelete(id);
+      if (!manga) {
+        throw new NotFoundException('Manga not found');
+      }
+      return manga;
+    } catch (error) {
+      throw new NotFoundException('Manga not found');
+    }
   }
 }

@@ -6,7 +6,6 @@ import {
   Param,
   Post,
   Put,
-  Query,
   UseGuards,
   ValidationPipe,
 } from '@nestjs/common';
@@ -19,14 +18,10 @@ import { Manga } from './schemas/manga.schema';
 @Controller('mangas')
 export class MangaController {
   constructor(private readonly mangaService: MangaService) {}
+
   @Get()
   getMangas(): Promise<Manga[]> {
     return this.mangaService.getMangas();
-  }
-
-  @Get()
-  getMangasWithQuery(@Query('type') type: string) {
-    return [{ type }]; // example : /mangas?type=murim
   }
 
   @Get(':id')
