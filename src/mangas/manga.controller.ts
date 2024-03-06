@@ -3,9 +3,7 @@ import {
   Controller,
   Delete,
   Get,
-  NotFoundException,
   Param,
-  ParseIntPipe,
   Post,
   Put,
   Query,
@@ -14,15 +12,16 @@ import {
 } from '@nestjs/common';
 import { CreateMangaDto } from './dto/create-manga.dto';
 import { UpdateMangaDto } from './dto/update-manga.dto';
-import { MangasService } from './mangas.service';
+import { MangaService } from './manga.service';
 import { GalsenMangasGuard } from 'src/galsen-mangas/galsen-mangas.guard';
+import { Manga } from './schemas/manga.schema';
 
 @Controller('mangas')
-export class MangasController {
-  constructor(private readonly mangasService: MangasService) {}
+export class MangaController {
+  constructor(private readonly mangaService: MangaService) {}
   @Get()
-  getMangas(@Query('type') type: 'murim' | 'action') {
-    return this.mangasService.getMangas(type);
+  getMangas(): Promise<Manga[]> {
+    return this.mangaService.getMangas();
   }
 
   @Get()
@@ -31,27 +30,25 @@ export class MangasController {
   }
 
   @Get(':id')
-  getManga(@Param('id', ParseIntPipe) id: number) {
-    try {
-      return this.mangasService.getManga(id);
-    } catch (error) {
-      throw new NotFoundException();
-    }
+  getManga(@Param('id') id: string): Promise<Manga> {
+    return this.mangaService.getManga(id);
   }
 
   @Post()
   @UseGuards(GalsenMangasGuard)
-  createManga(@Body(new ValidationPipe()) createMangaDto: CreateMangaDto) {
-    return this.mangasService.createManga(createMangaDto);
+  createManga(
+    @Body(new ValidationPipe()) createMangaDto: CreateMangaDto,
+  ): Promise<Manga> {
+    return this.mangaService.createManga(createMangaDto);
   }
 
   @Put(':id')
   updateManga(@Param('id') id: string, @Body() updateMangaDto: UpdateMangaDto) {
-    return this.mangasService.updateManga(+id, updateMangaDto);
+    return this.mangaService.updateManga(id, updateMangaDto);
   }
 
   @Delete(':id')
   deleteManga(@Param('id') id: string) {
-    return this.mangasService.deleteManga(+id);
+    return this.mangaService.deleteManga(id);
   }
 }
