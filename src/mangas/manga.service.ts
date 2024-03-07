@@ -5,6 +5,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { Manga } from './schemas/manga.schema';
 import { UpdateMangaDto } from './dto/update-manga.dto';
+import { Query as ExpressQuery } from 'express-serve-static-core';
 
 @Injectable()
 export class MangaService {
@@ -13,13 +14,23 @@ export class MangaService {
     private mangaModel: Model<Manga>,
   ) {}
 
-  private mangas = [
-    { id: 0, name: 'Naruto', type: 'murim' },
-    { id: 0, name: 'One Piece', type: 'action' },
-  ];
+  async getMangas(query: ExpressQuery): Promise<Manga[]> {
+    const limitPerPage = 10;
+    const currentPage = Number(query.page) || 1;
+    const skip = limitPerPage * (currentPage - 1);
 
-  async getMangas(): Promise<Manga[]> {
-    const allMangas = await this.mangaModel.find();
+    const search = query.search
+      ? {
+          name: {
+            $regex: query.search,
+            $options: 'i',
+          },
+        }
+      : {};
+    const allMangas = await this.mangaModel
+      .find({ ...search })
+      .limit(limitPerPage)
+      .skip(skip);
     return allMangas;
   }
 
@@ -40,7 +51,6 @@ export class MangaService {
     return res;
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   async updateManga(
     id: string,
     updateMangaDto: UpdateMangaDto,
