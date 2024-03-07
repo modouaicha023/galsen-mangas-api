@@ -1,8 +1,12 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { CreateMangaDto } from './dto/create-manga.dto';
 // import { UpdateMangaDto } from './dto/update-manga.dto';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
+import mongoose, { Model } from 'mongoose';
 import { Manga } from './schemas/manga.schema';
 import { UpdateMangaDto } from './dto/update-manga.dto';
 import { Query as ExpressQuery } from 'express-serve-static-core';
@@ -35,15 +39,15 @@ export class MangaService {
   }
 
   async getManga(id: string): Promise<Manga> {
-    try {
-      const manga = await this.mangaModel.findById(id);
-      if (!manga) {
-        throw new NotFoundException('Manga not found');
-      }
-      return manga;
-    } catch (error) {
+    const isValidId = mongoose.isValidObjectId(id);
+    if (!isValidId) {
+      throw new BadRequestException('Please enter a correct Id');
+    }
+    const manga = await this.mangaModel.findById(id);
+    if (!manga) {
       throw new NotFoundException('Manga not found');
     }
+    return manga;
   }
 
   async createManga(createMangaDto: CreateMangaDto): Promise<Manga> {
@@ -55,30 +59,29 @@ export class MangaService {
     id: string,
     updateMangaDto: UpdateMangaDto,
   ): Promise<Manga> {
-    try {
-      const manga = await this.mangaModel.findByIdAndUpdate(
-        id,
-        updateMangaDto,
-        { new: true, runValidators: true },
-      );
-      if (!manga) {
-        throw new NotFoundException('Manga not found');
-      }
-      return manga;
-    } catch (error) {
+    const isValidId = mongoose.isValidObjectId(id);
+    if (!isValidId) {
+      throw new BadRequestException('Please enter a correct Id');
+    }
+    const manga = await this.mangaModel.findByIdAndUpdate(id, updateMangaDto, {
+      new: true,
+      runValidators: true,
+    });
+    if (!manga) {
       throw new NotFoundException('Manga not found');
     }
+    return manga;
   }
 
   async deleteManga(id: string) {
-    try {
-      const manga = await this.mangaModel.findByIdAndDelete(id);
-      if (!manga) {
-        throw new NotFoundException('Manga not found');
-      }
-      return manga;
-    } catch (error) {
+    const isValidId = mongoose.isValidObjectId(id);
+    if (!isValidId) {
+      throw new BadRequestException('Please enter a correct Id');
+    }
+    const manga = await this.mangaModel.findByIdAndDelete(id);
+    if (!manga) {
       throw new NotFoundException('Manga not found');
     }
+    return manga;
   }
 }
