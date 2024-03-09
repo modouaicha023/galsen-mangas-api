@@ -1,6 +1,6 @@
 import {
   IsArray,
-  IsDate,
+  IsDateString,
   IsEnum,
   IsNotEmpty,
   IsNumber,
@@ -45,7 +45,7 @@ export class CreateMangaDto {
   readonly chapters: string[];
 
   @IsNotEmpty()
-  @IsDate()
+  @IsDateString()
   readonly releaseDate: Date;
 
   @IsNotEmpty()

@@ -2,7 +2,7 @@ import { PartialType } from '@nestjs/mapped-types';
 import { CreateMangaDto, State } from './create-manga.dto';
 import {
   IsArray,
-  IsDate,
+  IsDateString,
   IsEnum,
   IsNumber,
   IsOptional,
@@ -43,7 +43,7 @@ export class UpdateMangaDto extends PartialType(CreateMangaDto) {
   readonly chapters: string[];
 
   @IsOptional()
-  @IsDate()
+  @IsDateString()
   readonly releaseDate: Date;
 
   @IsOptional()
