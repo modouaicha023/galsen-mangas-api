@@ -5,6 +5,7 @@ import { MangaModule } from './mangas/manga.module';
 import { AnimesModule } from './animes/animes.module';
 import { ConfigModule } from '@nestjs/config';
 import { MongooseModule } from '@nestjs/mongoose';
+import { AuthModule } from './auth/auth.module';
 
 @Module({
   imports: [
@@ -15,6 +16,7 @@ import { MongooseModule } from '@nestjs/mongoose';
     MongooseModule.forRoot(process.env.DB_URI as string),
     MangaModule,
     AnimesModule,
+    AuthModule,
   ],
   controllers: [AppController],
   providers: [AppService],
